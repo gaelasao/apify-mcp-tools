@@ -2,9 +2,9 @@
 
 Two pay-per-use data tools that any MCP client (Claude, Cursor, VS Code, Codex…) can call. They run on [Apify](https://apify.com) and are served through the official [Apify MCP server](https://docs.apify.com/platform/integrations/mcp): there is nothing to install or host.
 
-## Keyword Research API
+## Keyword Research API: search volume, CPC, difficulty, intent
 
-Google keyword data in bulk, in every country:
+Keyword search volume and the rest of Google's keyword data in bulk, in every country. A Google Keyword Planner alternative for agents, with no Google Ads account needed:
 
 - **Metrics** for up to 10,000 keywords per run: search volume, 12-month history, CPC, competition, top-of-page bids, keyword difficulty, search intent and trend.
 - **Keyword ideas** from 1 to 20 seed keywords.
