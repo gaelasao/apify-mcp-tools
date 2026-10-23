@@ -14,6 +14,7 @@ Price: **$2 per 1,000 keywords with data**, plus $0.01 per run that returns data
 
 - MCP URL: `https://mcp.apify.com/?tools=gaelasao/keyword-research-api`
 - Store page: https://apify.com/gaelasao/keyword-research-api
+- How it was built: [Keyword research for AI agents: search volume, CPC and difficulty over MCP](https://dev.to/gal_gerard_5a39555b810e9/keyword-research-for-ai-agents-search-volume-cpc-and-difficulty-over-mcp-bdf) (DEV)
 
 Try asking your agent:
 - *"Get search volume, CPC and difficulty for these 50 keywords in Germany, sorted by volume."*
