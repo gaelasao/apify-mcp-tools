@@ -10,6 +10,8 @@ Keyword search volume and the rest of Google's keyword data in bulk, in every co
 - **Keyword ideas** from 1 to 20 seed keywords: broad ideas, long-tail suggestions that contain the seed, or Google's related searches.
 - **Competitor keywords**: up to 10 websites per run, with position, ranking page and estimated traffic; filter positions 4 to 20 for striking distance keywords.
 
+![Real output for 8 running shoe keywords in the US: Google, Bing and AI search volume, 12-month trend, CPC, difficulty, intent and SERP features](assets/keyword-research-api-output.png)
+
 Price: **$2 per 1,000 keywords with data**, plus $0.01 per run that returns data. Keywords without data are free. Lower prices on higher Apify plans.
 
 - MCP URL: `https://mcp.apify.com/?tools=gaelasao/keyword-research-api`
