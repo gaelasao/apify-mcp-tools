@@ -1,12 +1,12 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.gaelasao/keyword-research-api",
-  "description": "Keyword search volume, CPC, difficulty and intent, plus keyword ideas and competitor keywords.",
+  "description": "Keyword search volume, AI search volume, CPC, difficulty, intent, ideas and competitor keywords.",
   "repository": {
     "url": "https://github.com/gaelasao/apify-mcp-tools",
     "source": "github"
   },
-  "version": "1.0.1",
+  "version": "1.0.2",
   "remotes": [
     {
       "type": "streamable-http",

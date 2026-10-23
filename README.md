@@ -6,7 +6,7 @@ Two pay-per-use data tools that any MCP client (Claude, Cursor, VS Code, Codexâ€
 
 Keyword search volume and the rest of Google's keyword data in bulk, in every country. A Google Keyword Planner alternative for agents, with no Google Ads account needed:
 
-- **Metrics** for up to 10,000 keywords per run: search volume, 12-month history, CPC, competition, top-of-page bids, keyword difficulty, search intent and trend.
+- **Metrics** for up to 10,000 keywords per run: search volume, 12-month history, CPC, competition, top-of-page bids, keyword difficulty, search intent, trend and **AI search volume** (how often the keyword comes up in AI assistants).
 - **Keyword ideas** from 1 to 20 seed keywords.
 - **Competitor keywords**: enter a website and get the keywords it ranks for, with position, ranking page and estimated traffic.
 
