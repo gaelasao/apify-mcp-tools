@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "keyword-research-api": {
+      "url": "https://mcp.apify.com/?tools=gaelasao/keyword-research-api"
+    },
+    "building-permits-api": {
+      "url": "https://mcp.apify.com/?tools=gaelasao/planning-data-au-nz-fr"
+    }
+  }
+}
