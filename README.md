@@ -27,6 +27,8 @@ Try asking your agent:
 
 Official building permits and planning applications, normalised into one schema, with source links and licences: France (SDES Sitadel: housing, non-residential, development and demolition permits, including the applicant company and its SIREN when it is a legal entity), NSW Planning Portal applications, and Far North District building applications.
 
+![Real output for 8 housing authorisations in Rhône, France: permit type, status, dwellings, floor area, applicant company with SIREN and dates](assets/building-permits-api-output.png)
+
 Price: $5 per 1,000 records (lower on higher Apify plans).
 
 - MCP URL: `https://mcp.apify.com/?tools=gaelasao/planning-data-au-nz-fr`
