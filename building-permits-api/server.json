@@ -1,12 +1,12 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.gaelasao/building-permits-api",
-  "description": "Building permits and planning applications for France, NSW Australia and Far North NZ.",
+  "description": "Building permits for NYC, Chicago, LA, Austin, Seattle, France, NSW Australia and Far North NZ.",
   "repository": {
     "url": "https://github.com/gaelasao/apify-mcp-tools",
     "source": "github"
   },
-  "version": "1.0.0",
+  "version": "1.0.1",
   "remotes": [
     {
       "type": "streamable-http",

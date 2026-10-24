@@ -24,9 +24,14 @@ Try asking your agent:
 - *"Which keywords bring competitor.com the most traffic in the UK? Show the top 30 with their ranking pages."*
 - *"Find 200 long-tail ideas around 'standing desk' with at least 100 searches a month."*
 
-## Building Permits API (France, NSW Australia, Far North New Zealand)
+## Building Permits API (US cities, France, NSW Australia, Far North NZ)
 
-Official building permits and planning applications, normalised into one schema, with source links and licences: France (SDES Sitadel: housing, non-residential, development and demolition permits, including the applicant company and its SIREN when it is a legal entity), NSW Planning Portal applications, and Far North District building applications.
+Official building permits and planning applications, normalised into one schema, with source links and licences:
+- **United States**: issued permits from the open-data portals of New York City, Chicago, Los Angeles, Austin and Seattle, with the declared project value and, where published, the contractor's business name. Filter by ZIP code and keywords.
+- **France**: SDES Sitadel housing, non-residential, development and demolition permits, including the applicant company and its SIREN when it is a legal entity.
+- **Australia and New Zealand**: NSW Planning Portal applications and Far North District building applications.
+
+![Real output for 8 US building permits: permit number, type, work description, ZIP code, project value, contractor and issue date](assets/building-permits-api-us-output.png)
 
 ![Real output for 8 housing authorisations in Rhône, France: permit type, status, dwellings, floor area, applicant company with SIREN and dates](assets/building-permits-api-output.png)
 
