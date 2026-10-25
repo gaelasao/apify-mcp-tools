@@ -1,0 +1,24 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.gaelasao/ai-visibility-tracker",
+  "description": "Is your brand mentioned and cited in ChatGPT, Perplexity, Gemini and Google AI answers?",
+  "repository": {
+    "url": "https://github.com/gaelasao/apify-mcp-tools",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.apify.com/?tools=gaelasao/ai-visibility-tracker",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer followed by your Apify API token. Not needed if your client signs in with OAuth.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

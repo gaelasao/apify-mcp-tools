@@ -5,6 +5,9 @@
     },
     "building-permits-api": {
       "url": "https://mcp.apify.com/?tools=gaelasao/planning-data-au-nz-fr"
+    },
+    "ai-visibility-tracker": {
+      "url": "https://mcp.apify.com/?tools=gaelasao/ai-visibility-tracker"
     }
   }
 }

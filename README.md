@@ -40,6 +40,23 @@ Price: $5 per 1,000 records (lower on higher Apify plans).
 - MCP URL: `https://mcp.apify.com/?tools=gaelasao/planning-data-au-nz-fr`
 - Store page: https://apify.com/gaelasao/planning-data-au-nz-fr
 
+## AI Visibility Tracker: brand mentions in ChatGPT, Perplexity, Gemini and Google AI
+
+Ask the AI engines the questions your customers ask and see whether they mention and cite your brand:
+- **Engines**: Google AI Overview, Google AI Mode, ChatGPT (with web search), Gemini and Perplexity, from the country you choose.
+- **One row per prompt and engine**: brand mentioned, rank among the brands named, cited as a source, competitors named or cited, share of voice, top source domains, the searches the engine ran, and the answer.
+- **A summary by engine and by competitor**, plus the most cited domains: the pages to win a mention on.
+
+![Real output for Notion against Coda, Obsidian and Evernote: mention, rank, citation, competitors, share of voice and top sources](assets/ai-visibility-tracker-output.png)
+
+Price: **$0.01 per check** (one prompt on one engine; Perplexity counts as 2). Failed checks are free.
+
+- MCP URL: `https://mcp.apify.com/?tools=gaelasao/ai-visibility-tracker`
+- Store page: https://apify.com/gaelasao/ai-visibility-tracker
+
+Try asking your agent:
+- *"Check whether ChatGPT, Perplexity and Google AI Overviews mention Notion for these 10 prompts in the US, and compare with Coda and Obsidian."*
+
 ## Connect
 
 You need an Apify account; runs are billed to it. Clients that support OAuth sign you in on first use. Otherwise, pass your [Apify API token](https://console.apify.com/settings/integrations).
