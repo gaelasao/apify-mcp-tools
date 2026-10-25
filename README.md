@@ -24,10 +24,10 @@ Try asking your agent:
 - *"Which keywords bring competitor.com the most traffic in the UK? Show the top 30 with their ranking pages."*
 - *"Find 200 long-tail ideas around 'standing desk' with at least 100 searches a month."*
 
-## Building Permits API (US cities, France, NSW Australia, Far North NZ)
+## Building Permits API (12 US cities and counties, France, NSW Australia, Far North NZ)
 
 Official building permits and planning applications, normalised into one schema, with source links and licences:
-- **United States**: issued permits from the open-data portals of New York City, Chicago, Los Angeles, Austin and Seattle, with the declared project value and, where published, the contractor's business name. Filter by ZIP code and keywords.
+- **United States**: issued permits from 12 city and county open-data portals (New York City, Los Angeles, Chicago, Dallas, Seattle, Austin, Orlando, New Orleans, Cincinnati, Mesa, Baton Rouge, Montgomery County MD), with the declared project value and, where published, the contractor's business name. Filter by ZIP code and keywords.
 - **France**: SDES Sitadel housing, non-residential, development and demolition permits, including the applicant company and its SIREN when it is a legal entity.
 - **Australia and New Zealand**: NSW Planning Portal applications and Far North District building applications.
 
