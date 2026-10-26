@@ -64,6 +64,7 @@ Try asking your agent:
 Ready-to-import [n8n](https://n8n.io) workflows in [`n8n/`](n8n), built on the official Apify node:
 - [`keyword-tracking-google-sheets.json`](n8n/keyword-tracking-google-sheets.json): every Monday, one row per keyword in Google Sheets with search volume, CPC, difficulty, intent, AI search volume and AI Overview.
 - [`building-permits-weekly-digest.json`](n8n/building-permits-weekly-digest.json): every Monday, last week's building permits in your US ZIP codes, sent by Gmail and Slack.
+- [`ai-visibility-weekly-report.json`](n8n/ai-visibility-weekly-report.json): every Monday, whether ChatGPT, Perplexity, Gemini and Google AI Overviews name and cite your brand, as rows in Google Sheets and a summary in Slack.
 
 In n8n, import the file into a new workflow, then add your Apify, Google, Gmail or Slack credentials. The sticky notes in each workflow explain the setup and the costs.
 

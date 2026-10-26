@@ -1,0 +1,346 @@
+{
+  "name": "Track your brand in ChatGPT, Perplexity, Gemini and Google AI answers weekly with Apify",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "5868a190-6d09-58d8-b7ef-6f493c6badcb",
+      "name": "Every Monday morning",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e3e72e75-b798-5baa-a6e0-c08094434a18",
+              "name": "brand",
+              "value": "Notion",
+              "type": "string"
+            },
+            {
+              "id": "379c6e3d-2854-5b60-8f8f-ae009b86a70d",
+              "name": "brandDomains",
+              "value": "[\"notion.com\", \"notion.so\"]",
+              "type": "array"
+            },
+            {
+              "id": "c89917d6-abac-5814-ae11-61dff0d98ebe",
+              "name": "competitors",
+              "value": "[\"Coda | coda.io\", \"Obsidian | obsidian.md\", \"Evernote | evernote.com\"]",
+              "type": "array"
+            },
+            {
+              "id": "d22a0d90-adc6-5656-a8f5-6e6894b6516b",
+              "name": "prompts",
+              "value": "[\"best note-taking app for teams\", \"notion alternatives\", \"best wiki software for startups\"]",
+              "type": "array"
+            },
+            {
+              "id": "74399e05-5b9e-5e20-a1fe-c0026daaea48",
+              "name": "engines",
+              "value": "[\"google_ai_overview\", \"chatgpt\", \"perplexity\", \"gemini\"]",
+              "type": "array"
+            },
+            {
+              "id": "91ff8562-a8fb-5b36-a377-090a0007a2c3",
+              "name": "country",
+              "value": "US",
+              "type": "string"
+            },
+            {
+              "id": "3b1a29b5-571f-5081-a836-71528de02754",
+              "name": "slackChannel",
+              "value": "#marketing",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2d7ca2bf-e8a8-5c1d-bbe1-a400b87413a2",
+      "name": "Set your brand and questions",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        260,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "Actors",
+        "operation": "Run actor and get dataset",
+        "actorId": "gaelasao~ai-visibility-tracker",
+        "memory": 256,
+        "maxTotalChargeUsd": 1,
+        "customBody": "={{ JSON.stringify({ brand: $json.brand, brandDomains: $json.brandDomains, competitors: $json.competitors, prompts: $json.prompts, engines: $json.engines, country: $json.country }) }}"
+      },
+      "id": "2db3765f-5ab1-511c-8adf-ca93ae74e15f",
+      "name": "Ask the AI engines",
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        520,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// One sheet row per question and engine, dated with the week.\nconst weekOf = $now.toFormat('yyyy-MM-dd');\n\nreturn $input.all()\n  .filter((item) => item.json.engine)\n  .map(({ json: r }) => ({\n    json: {\n      'Week of': weekOf,\n      Question: r.prompt,\n      Engine: r.engine_name ?? r.engine,\n      Status: r.status,\n      Mentioned: r.brand_mentioned ? 'YES' : r.status === 'ok' ? 'no' : '',\n      Rank: r.brand_rank ?? '',\n      Cited: r.brand_cited ? 'YES' : r.status === 'ok' ? 'no' : '',\n      'Competitors named': (r.competitors_mentioned ?? []).join(', '),\n      'Share of voice': typeof r.share_of_voice === 'number' ? Math.round(r.share_of_voice * 100) + '%' : '',\n      'Top sources': (r.top_cited_domains ?? []).slice(0, 5).join(', '),\n    },\n  }));\n"
+      },
+      "id": "ba234c5c-47d5-5a98-837f-b8c763f79270",
+      "name": "Shape rows for the sheet",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": []
+        },
+        "options": {}
+      },
+      "id": "9e4cbdec-8fe3-5947-b0bc-062c88b74e42",
+      "name": "Append this week's rows",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1040,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// One Slack message for the week: mention and citation rate per engine, and the competitors named most.\nconst settings = $('Set your brand and questions').first().json;\nconst rows = $input.all().map((item) => item.json).filter((r) => r.engine && r.status === 'ok');\nconst pct = (n, d) => (d ? Math.round((100 * n) / d) + '%' : 'n/a');\n\nconst engines = [...new Set(rows.map((r) => r.engine_name ?? r.engine))];\nconst lines = engines.map((name) => {\n  const e = rows.filter((r) => (r.engine_name ?? r.engine) === name);\n  const mentioned = e.filter((r) => r.brand_mentioned).length;\n  const cited = e.filter((r) => r.brand_cited).length;\n  return `• ${name}: named in ${mentioned} of ${e.length} answers (${pct(mentioned, e.length)}), site cited in ${cited}`;\n});\n\nconst rivals = {};\nfor (const r of rows) for (const c of r.competitors_mentioned ?? []) rivals[c] = (rivals[c] ?? 0) + 1;\nconst top = Object.entries(rivals).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([c, n]) => `${c} (${n})`).join(', ');\n\nconst named = rows.filter((r) => r.brand_mentioned).length;\nconst text = [\n  `*AI visibility for ${settings.brand}, week of ${$now.toFormat('yyyy-MM-dd')}*`,\n  `Named in ${named} of ${rows.length} AI answers (${pct(named, rows.length)}).`,\n  ...lines,\n  top ? `Competitors named most: ${top}` : 'No tracked competitor was named.',\n].join('\\n');\n\nreturn [{ json: { text, slackChannel: settings.slackChannel } }];\n"
+      },
+      "id": "f535a1a9-ab67-53d1-9a93-114f548a984f",
+      "name": "Build the summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ $json.slackChannel }}"
+        },
+        "text": "={{ $json.text }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "id": "7164d3e2-9132-5367-9ccc-a47024c75ef9",
+      "name": "Post to Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1040,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Track your brand in ChatGPT, Perplexity, Gemini and Google AI answers every week\n\nMore buyers ask an AI assistant \"what's the best X?\" before they search. Every Monday this workflow asks ChatGPT, Perplexity, Gemini and Google AI Overviews the questions your customers ask, appends one row per question and engine to Google Sheets, and posts a short summary to Slack: is your brand named, in which position, is your site cited, and which competitors are named instead.\n\n**Who's it for**\nMarketing and SEO teams, agencies reporting AI visibility (GEO) to clients, and founders watching how AI assistants talk about their product.\n\n**How it works**\n1. A schedule trigger fires every Monday morning\n2. A Set node holds your brand, websites, competitors, questions and engines\n3. The Apify node runs AI Visibility Tracker and waits for the answers\n4. One Code node shapes a sheet row per question and engine; another builds the Slack summary\n5. Google Sheets appends the rows and Slack posts the summary\n\n**Setup**\n1. Create an Apify account and add your API token to the Apify credential\n2. Connect Google in the Sheets node (pick a spreadsheet and a tab) and Slack\n3. In the Set node, enter your brand, your websites, up to 10 competitors as \"Name | domain\", your questions and your Slack channel\n\n**Good to know**\n$0.01 per check (one question on one engine; a Perplexity answer counts as 2) plus $0.01 per run. 10 questions on the 4 engines cost about $0.51 a week. The Apify node stops a run at $1. Answers change from week to week, so read the trend, not one run.\nActor: https://apify.com/gaelasao/ai-visibility-tracker",
+        "width": 520,
+        "height": 1100
+      },
+      "id": "69b67717-449e-5b63-ab92-b7bd98c27670",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -600,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 1. Schedule\nRuns every Monday morning. Swap in a manual trigger while you test.",
+        "width": 240,
+        "height": 240,
+        "color": 7
+      },
+      "id": "c81719b5-5f67-5b1f-a171-7c0f6bd81771",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 2. Your brand\nBrand, websites (for citations), competitors as \"Name | domain\", up to 100 questions, engines, country and Slack channel.",
+        "width": 240,
+        "height": 240,
+        "color": 7
+      },
+      "id": "0165f345-6392-5010-a69c-f2a9bebae538",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        220,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 3. AI answers\nRuns AI Visibility Tracker on Apify: one row per question and engine. The run stops at $1 (node setting).",
+        "width": 240,
+        "height": 240,
+        "color": 7
+      },
+      "id": "d9699452-f605-59cf-b4ed-8b0390f888df",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        480,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 4. Rows and summary\nOne Code node shapes the sheet rows, the other builds the Slack message from the same answers.",
+        "width": 240,
+        "height": 240,
+        "color": 7
+      },
+      "id": "18f9ec8e-838c-54a1-bcf6-3aa4b00b0cdf",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        740,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 5. Send\nGoogle Sheets keeps the history; Slack gets the weekly summary. Delete the one you do not use.",
+        "width": 240,
+        "height": 200,
+        "color": 7
+      },
+      "id": "aa809f3f-0247-58c1-8db4-36d42bde47a6",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        100
+      ]
+    }
+  ],
+  "connections": {
+    "Every Monday morning": {
+      "main": [
+        [
+          {
+            "node": "Set your brand and questions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set your brand and questions": {
+      "main": [
+        [
+          {
+            "node": "Ask the AI engines",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask the AI engines": {
+      "main": [
+        [
+          {
+            "node": "Shape rows for the sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Build the summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shape rows for the sheet": {
+      "main": [
+        [
+          {
+            "node": "Append this week's rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build the summary": {
+      "main": [
+        [
+          {
+            "node": "Post to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}
