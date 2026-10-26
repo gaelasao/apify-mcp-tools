@@ -1,0 +1,306 @@
+{
+  "name": "Get new building permits in your ZIP codes every week by email and Slack with Apify",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "id": "5868a190-6d09-58d8-b7ef-6f493c6badcb",
+      "name": "Every Monday morning",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "87fc226d-a561-53f2-993d-0517221793db",
+              "name": "city",
+              "value": "us-nyc-dob",
+              "type": "string"
+            },
+            {
+              "id": "66272bd4-c910-5507-b583-2de4006da44f",
+              "name": "zipCodes",
+              "value": "[\"10001\", \"10011\", \"10014\"]",
+              "type": "array"
+            },
+            {
+              "id": "4bb7870f-4dd8-53e0-896d-ab36521b0e07",
+              "name": "keywords",
+              "value": "[]",
+              "type": "array"
+            },
+            {
+              "id": "40d9db6e-2e94-5fd3-8139-8660655e08ed",
+              "name": "maxPermits",
+              "value": "100",
+              "type": "number"
+            },
+            {
+              "id": "005417b0-508e-5824-934b-eb832da38ee7",
+              "name": "sendTo",
+              "value": "you@example.com",
+              "type": "string"
+            },
+            {
+              "id": "3b1a29b5-571f-5081-a836-71528de02754",
+              "name": "slackChannel",
+              "value": "#permits",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dfe52217-f12d-55e3-bc20-4cbf93dea209",
+      "name": "Set the area to watch",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        260,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "Actors",
+        "operation": "Run actor and get dataset",
+        "actorId": "gaelasao~planning-data-au-nz-fr",
+        "memory": 512,
+        "maxTotalChargeUsd": 0.5,
+        "customBody": "={{ JSON.stringify({ country: 'US', sourceIds: [$json.city], zipCodes: $json.zipCodes, keywords: $json.keywords, dateFrom: $now.minus({ days: 7 }).toFormat('yyyy-MM-dd'), dateTo: $now.minus({ days: 1 }).toFormat('yyyy-MM-dd'), maxResults: $json.maxPermits }) }}"
+      },
+      "id": "8c7e9b68-1720-5354-af5e-bc2b0d8641da",
+      "name": "Get last week's permits",
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        520,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// One digest for the week: an HTML table for the email and a short list for Slack.\nconst area = $('Set the area to watch').first().json;\nconst permits = $input.all().map((item) => item.json).filter((p) => p.reference);\n\nconst esc = (value) => String(value ?? '').replace(/[&<>\"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;' }[c]));\nconst usd = (value) => (typeof value === 'number' ? '$' + Math.round(value).toLocaleString('en-US') : '');\n\nconst rows = permits.map((p) => ({\n  issued: String(p.issued_date ?? '').slice(0, 10),\n  address: [p.address, p.postal_code].filter(Boolean).join(', '),\n  type: p.raw_type ?? '',\n  work: String(p.description ?? '').slice(0, 160),\n  value: usd(p.metrics?.project_value_usd),\n  contractor: p.metrics?.contractor_business_name ?? '',\n  link: p.metrics?.permit_url ?? '',\n}));\n\nconst city = permits[0]?.authority_name ?? area.city;\nconst zips = area.zipCodes.length ? area.zipCodes.join(', ') : 'all ZIP codes';\nconst subject = `${rows.length} new building permits in ${city} (${zips})`;\n\nconst cell = (value) => `<td style=\"border-top:1px solid #e3e6eb;vertical-align:top\">${value}</td>`;\nconst html = `<p>${esc(subject)}, issued in the last 7 days.</p>\n<table cellpadding=\"6\" style=\"border-collapse:collapse;font:13px Arial,sans-serif\">\n<tr style=\"background:#f1f3f6;text-align:left\"><th>Issued</th><th>Address</th><th>Type</th><th>Work</th><th>Value</th><th>Contractor</th></tr>\n${rows.map((r) => '<tr>' + [\n    esc(r.issued),\n    r.link ? `<a href=\"${esc(r.link)}\">${esc(r.address)}</a>` : esc(r.address),\n    esc(r.type), esc(r.work), esc(r.value), esc(r.contractor),\n  ].map(cell).join('') + '</tr>').join('\\n')}\n</table>`;\n\nconst lines = rows.slice(0, 30).map((r) => `• ${[r.issued, r.address, r.type, r.value, r.contractor].filter(Boolean).join(' · ')}`);\nif (rows.length > 30) lines.push(`…and ${rows.length - 30} more.`);\nconst text = [`*${subject}*`, ...lines].join('\\n');\n\nreturn [{ json: { subject, html, text, sendTo: area.sendTo, slackChannel: area.slackChannel } }];\n"
+      },
+      "id": "d0b0fce8-7121-5a59-a422-6f04be7d865f",
+      "name": "Build the digest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.sendTo }}",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.html }}",
+        "emailType": "html",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "61caa433-c56c-5ff3-a201-6ae3f8520791",
+      "name": "Email the digest",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1040,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ $json.slackChannel }}"
+        },
+        "text": "={{ $json.text }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "id": "7164d3e2-9132-5367-9ccc-a47024c75ef9",
+      "name": "Post to Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1040,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Get new building permits in your ZIP codes every week, by email and Slack\n\nA permit is filed weeks before the work starts, which makes it one of the earliest leads a contractor, supplier or installer can get. Every Monday this workflow pulls the building permits a US city issued in the last 7 days in the ZIP codes you choose, and sends one digest: address, permit type, work description, declared value and contractor.\n\n**Who's it for**\nRoofers, solar installers, HVAC and pool companies, building suppliers, and anyone who sells to contractors or new owners.\n\n**How it works**\n1. A schedule trigger fires every Monday morning\n2. A Set node holds the city, the ZIP codes, optional keywords and where to send the digest\n3. The Apify node runs Building Permits API for the last 7 days\n4. A Code node builds one digest: an HTML table for email and a short list for Slack\n5. Gmail and Slack send it. Keep either one, or both.\n\n**Setup**\n1. Create an Apify account and add your API token to the Apify credential\n2. Connect Gmail and/or Slack\n3. In the Set node, pick the city, your ZIP codes, your email address and your Slack channel\n\n**Cities with ZIP codes**\nus-nyc-dob (New York City), us-la-building (Los Angeles), us-austin-building, us-seattle-building, us-dallas-building, us-cincinnati-building, us-montgomery-md-residential, us-montgomery-md-commercial and us-baton-rouge-building. Chicago, Orlando, New Orleans and Mesa publish no ZIP codes: empty the ZIP list and filter with keywords instead.\n\n**Good to know**\n$5 per 1,000 permits. The Set node asks for 100 permits at most and the Apify node stops a run at $0.50. No email is sent in a week without new permits. What each city publishes differs: Dallas rarely has values or contractors.\nActor: https://apify.com/gaelasao/planning-data-au-nz-fr",
+        "width": 520,
+        "height": 1140
+      },
+      "id": "69b67717-449e-5b63-ab92-b7bd98c27670",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -600,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 1. Schedule\nRuns every Monday morning. Swap in a manual trigger while you test.",
+        "width": 240,
+        "height": 240,
+        "color": 7
+      },
+      "id": "c81719b5-5f67-5b1f-a171-7c0f6bd81771",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 2. Area to watch\nCity source ID, five-digit ZIP codes, optional keywords such as solar or roof, and where to send the digest.",
+        "width": 240,
+        "height": 240,
+        "color": 7
+      },
+      "id": "0165f345-6392-5010-a69c-f2a9bebae538",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        220,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 3. Permits\nRuns Building Permits API on Apify for the 7 days up to yesterday. The run stops at $0.50 (node setting).",
+        "width": 240,
+        "height": 240,
+        "color": 7
+      },
+      "id": "d9699452-f605-59cf-b4ed-8b0390f888df",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        480,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 4. Digest\nOne item for the week: subject, HTML table and Slack text. Links go to the city permit page when it exists.",
+        "width": 240,
+        "height": 240,
+        "color": 7
+      },
+      "id": "18f9ec8e-838c-54a1-bcf6-3aa4b00b0cdf",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        740,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 5. Send\nGmail and Slack both get the digest. Delete the one you do not use.",
+        "width": 240,
+        "height": 200,
+        "color": 7
+      },
+      "id": "aa809f3f-0247-58c1-8db4-36d42bde47a6",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        100
+      ]
+    }
+  ],
+  "connections": {
+    "Every Monday morning": {
+      "main": [
+        [
+          {
+            "node": "Set the area to watch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set the area to watch": {
+      "main": [
+        [
+          {
+            "node": "Get last week's permits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get last week's permits": {
+      "main": [
+        [
+          {
+            "node": "Build the digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build the digest": {
+      "main": [
+        [
+          {
+            "node": "Email the digest",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Post to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

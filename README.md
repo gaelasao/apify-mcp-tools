@@ -1,6 +1,6 @@
-# Keyword research and building permit data for AI agents (MCP)
+# Keyword research, building permits and AI visibility data for AI agents (MCP)
 
-Two pay-per-use data tools that any MCP client (Claude, Cursor, VS Code, Codex…) can call. They run on [Apify](https://apify.com) and are served through the official [Apify MCP server](https://docs.apify.com/platform/integrations/mcp): there is nothing to install or host.
+Three pay-per-use data tools that any MCP client (Claude, Cursor, VS Code, Codex…) can call. They run on [Apify](https://apify.com) and are served through the official [Apify MCP server](https://docs.apify.com/platform/integrations/mcp): there is nothing to install or host.
 
 ## Keyword Research API: search volume, CPC, difficulty, intent
 
@@ -18,6 +18,7 @@ Price: **$2 per 1,000 keywords with data**, plus $0.01 per run that returns data
 - Store page: https://apify.com/gaelasao/keyword-research-api
 - How it was built: [Keyword research for AI agents: search volume, CPC and difficulty over MCP](https://dev.to/gal_gerard_5a39555b810e9/keyword-research-for-ai-agents-search-volume-cpc-and-difficulty-over-mcp-bdf) (DEV)
 - Case studies (DEV): [Striking distance keywords: what dev.to ranks 11 to 20 for on Google](https://dev.to/gal_gerard_5a39555b810e9/striking-distance-keywords-what-devto-ranks-11-to-20-for-on-google-m8p) and [AI search volume vs Google search volume: what 600 real keywords show](https://dev.to/gal_gerard_5a39555b810e9/ai-search-volume-vs-google-search-volume-what-600-real-keywords-show-3om0)
+- Compared with Keyword Planner (DEV): [A Google Keyword Planner alternative API: search volume numbers without a Google Ads account](https://dev.to/gal_gerard_5a39555b810e9/a-google-keyword-planner-alternative-api-search-volume-numbers-without-a-google-ads-account-5h79)
 
 Try asking your agent:
 - *"Get search volume, CPC and difficulty for these 50 keywords in Germany, sorted by volume."*
@@ -39,6 +40,7 @@ Price: $5 per 1,000 records (lower on higher Apify plans).
 
 - MCP URL: `https://mcp.apify.com/?tools=gaelasao/planning-data-au-nz-fr`
 - Store page: https://apify.com/gaelasao/planning-data-au-nz-fr
+- One week of real US data (DEV): [Building permits from 12 US cities in one API: a week of real data](https://dev.to/gal_gerard_5a39555b810e9/building-permits-from-12-us-cities-in-one-api-a-week-of-real-data-2pn)
 
 ## AI Visibility Tracker: brand mentions in ChatGPT, Perplexity, Gemini and Google AI
 
@@ -56,6 +58,14 @@ Price: **$0.01 per check** (one prompt on one engine; Perplexity counts as 2). F
 
 Try asking your agent:
 - *"Check whether ChatGPT, Perplexity and Google AI Overviews mention Notion for these 10 prompts in the US, and compare with Coda and Obsidian."*
+
+## n8n templates
+
+Ready-to-import [n8n](https://n8n.io) workflows in [`n8n/`](n8n), built on the official Apify node:
+- [`keyword-tracking-google-sheets.json`](n8n/keyword-tracking-google-sheets.json): every Monday, one row per keyword in Google Sheets with search volume, CPC, difficulty, intent, AI search volume and AI Overview.
+- [`building-permits-weekly-digest.json`](n8n/building-permits-weekly-digest.json): every Monday, last week's building permits in your US ZIP codes, sent by Gmail and Slack.
+
+In n8n, import the file into a new workflow, then add your Apify, Google, Gmail or Slack credentials. The sticky notes in each workflow explain the setup and the costs.
 
 ## Connect
 
@@ -80,7 +90,7 @@ claude mcp add --transport http apify "https://mcp.apify.com/?tools=gaelasao/key
 }
 ```
 
-Use both tools at once with `?tools=gaelasao/keyword-research-api,gaelasao/planning-data-au-nz-fr`.
+Use several tools at once with `?tools=gaelasao/keyword-research-api,gaelasao/planning-data-au-nz-fr,gaelasao/ai-visibility-tracker`.
 
 ## Support
 

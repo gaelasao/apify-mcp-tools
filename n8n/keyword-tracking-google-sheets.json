@@ -1,0 +1,265 @@
+{
+  "name": "Track keyword search volume, CPC and difficulty weekly in Google Sheets with Apify",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "5868a190-6d09-58d8-b7ef-6f493c6badcb",
+      "name": "Every Monday morning",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4bb7870f-4dd8-53e0-896d-ab36521b0e07",
+              "name": "keywords",
+              "value": "[\"running shoes\", \"trail running shoes\", \"running shoe brands\"]",
+              "type": "array"
+            },
+            {
+              "id": "f2f03eba-315d-5adb-9dc3-b9b7d7f2998d",
+              "name": "location",
+              "value": "US",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b31ac6fc-262c-599c-87e3-bcfa1e3b7fdb",
+      "name": "Set your keywords",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        260,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "Actors",
+        "operation": "Run actor and get dataset",
+        "actorId": "gaelasao~keyword-research-api",
+        "memory": 256,
+        "maxTotalChargeUsd": 1,
+        "customBody": "={{ JSON.stringify({ keywords: $json.keywords, location: $json.location }) }}"
+      },
+      "id": "820f006c-7674-5399-82dc-c8ad5519cdc2",
+      "name": "Get keyword metrics",
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        520,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// One row per keyword for this week. Running the same list every Monday\n// turns the sheet into a history you can chart or pivot.\nconst settings = $('Set your keywords').first().json;\nconst weekOf = $now.toFormat('yyyy-MM-dd');\n\nreturn $input.all()\n  .filter((item) => item.json.keyword)\n  .map(({ json: k }) => ({\n    json: {\n      'Week of': weekOf,\n      Keyword: k.keyword,\n      Country: settings.location,\n      'Search volume': k.search_volume ?? '',\n      CPC: k.cpc ?? '',\n      Competition: k.competition_level ?? '',\n      'Keyword difficulty': k.keyword_difficulty ?? '',\n      Intent: k.search_intent ?? '',\n      'AI search volume': k.ai_search_volume ?? '',\n      'AI Overview': (k.serp_features ?? []).includes('ai_overview') ? 'YES' : '',\n      Status: k.data_status ?? '',\n    },\n  }));\n"
+      },
+      "id": "ba234c5c-47d5-5a98-837f-b8c763f79270",
+      "name": "Shape rows for the sheet",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": []
+        },
+        "options": {}
+      },
+      "id": "9e4cbdec-8fe3-5947-b0bc-062c88b74e42",
+      "name": "Append this week's rows",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1040,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Track keyword search volume, CPC and difficulty every week in Google Sheets\n\nKeyword Planner shows ranges such as \"1K–10K\" unless you spend on ads, and SEO suites charge by the month. Every Monday this workflow checks your keywords and appends one row per keyword to a Google Sheet: search volume, CPC, competition, keyword difficulty, search intent, AI search volume and whether Google shows an AI Overview. After a few weeks the sheet is a history you can chart.\n\n**Who's it for**\nSEO freelancers and agencies tracking a client's keywords, content teams choosing topics, and PPC managers watching CPC.\n\n**How it works**\n1. A schedule trigger fires every Monday morning\n2. A Set node holds your keywords and the country\n3. The Apify node runs Keyword Research API and waits for the rows\n4. A Code node turns each keyword into one sheet row, dated with the week\n5. Google Sheets appends the rows\n\n**Setup**\n1. Create an Apify account and add your API token to the Apify credential\n2. Connect Google in the Sheets node and pick a spreadsheet and a tab\n3. Put your keywords (1 to 10,000) and a country code such as US, GB or DE in the Set node\n\n**Good to know**\n$2 per 1,000 keywords with data plus $0.01 per run, so 100 keywords cost about $0.21 a week. Keywords without data are free. The Apify node stops a run at $1: raise it for big lists. Free Apify plans can check 20 keywords per run.\nVolumes are Google Ads monthly averages, rounded as in Keyword Planner: compare and prioritise with them rather than forecast exact traffic.\nActor: https://apify.com/gaelasao/keyword-research-api",
+        "width": 520,
+        "height": 1020
+      },
+      "id": "69b67717-449e-5b63-ab92-b7bd98c27670",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -600,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 1. Schedule\nRuns every Monday morning. Swap in a manual trigger while you test.",
+        "width": 240,
+        "height": 240,
+        "color": 7
+      },
+      "id": "c81719b5-5f67-5b1f-a171-7c0f6bd81771",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 2. Your keywords\nOne keyword per array entry, plus an ISO country code. Keep the same list every week so the rows compare.",
+        "width": 240,
+        "height": 240,
+        "color": 7
+      },
+      "id": "0165f345-6392-5010-a69c-f2a9bebae538",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        220,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 3. Keyword metrics\nRuns Keyword Research API on Apify and returns one row per keyword. The run stops at $1 (node setting).",
+        "width": 240,
+        "height": 240,
+        "color": 7
+      },
+      "id": "d9699452-f605-59cf-b4ed-8b0390f888df",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        480,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 4. Sheet rows\nAdds the week and keeps the columns worth charting. Edit the list to add bids or the 12-month history.",
+        "width": 240,
+        "height": 240,
+        "color": 7
+      },
+      "id": "18f9ec8e-838c-54a1-bcf6-3aa4b00b0cdf",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        740,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### 5. Google Sheets\nAppends the rows. Use an empty tab, or one whose first row has the same column names.",
+        "width": 240,
+        "height": 240,
+        "color": 7
+      },
+      "id": "aa809f3f-0247-58c1-8db4-36d42bde47a6",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        180
+      ]
+    }
+  ],
+  "connections": {
+    "Every Monday morning": {
+      "main": [
+        [
+          {
+            "node": "Set your keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set your keywords": {
+      "main": [
+        [
+          {
+            "node": "Get keyword metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get keyword metrics": {
+      "main": [
+        [
+          {
+            "node": "Shape rows for the sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shape rows for the sheet": {
+      "main": [
+        [
+          {
+            "node": "Append this week's rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}
