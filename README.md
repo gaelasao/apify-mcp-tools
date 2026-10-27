@@ -25,10 +25,12 @@ Try asking your agent:
 - *"Which keywords bring competitor.com the most traffic in the UK? Show the top 30 with their ranking pages."*
 - *"Find 200 long-tail ideas around 'standing desk' with at least 100 searches a month."*
 
-## Building Permits API (12 US cities and counties, France, NSW Australia, Far North NZ)
+## Building Permits API (18 US cities and counties, Canada, Ireland, France, NSW Australia, Far North NZ)
 
 Official building permits and planning applications, normalised into one schema, with source links and licences:
-- **United States**: issued permits from 12 city and county open-data portals (New York City, Los Angeles, Chicago, Dallas, Seattle, Austin, Orlando, New Orleans, Cincinnati, Mesa, Baton Rouge, Montgomery County MD), with the declared project value and, where published, the contractor's business name. Filter by ZIP code and keywords.
+- **United States**: issued permits from 18 city and county open-data portals (New York City, Los Angeles, Chicago, Philadelphia, Boston, Dallas, Seattle, Austin, Pittsburgh, Orlando, New Orleans, Cincinnati, Mesa, Baton Rouge, Norfolk, Cambridge MA, Montgomery County MD, Collin County TX), with the declared project value and, where published, the contractor's business name. Filter by ZIP code and keywords.
+- **Canada**: building permits from Calgary, Edmonton and Winnipeg, with declared values in Canadian dollars.
+- **Ireland**: planning applications from all 31 planning authorities (national database, CC BY 4.0), filterable by authority.
 - **France**: SDES Sitadel housing, non-residential, development and demolition permits, including the applicant company and its SIREN when it is a legal entity.
 - **Australia and New Zealand**: NSW Planning Portal applications and Far North District building applications.
 
