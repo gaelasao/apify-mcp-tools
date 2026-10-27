@@ -55,6 +55,7 @@ Price: **$0.01 per check** (one prompt on one engine; Perplexity counts as 2). F
 
 - MCP URL: `https://mcp.apify.com/?tools=gaelasao/ai-visibility-tracker`
 - Store page: https://apify.com/gaelasao/ai-visibility-tracker
+- Study (DEV): [Which brands do AI assistants recommend? 200 answers from ChatGPT, Perplexity, Gemini and Google](https://dev.to/gal_gerard_5a39555b810e9/which-brands-do-ai-assistants-recommend-200-answers-from-chatgpt-perplexity-gemini-and-google-i25)
 
 Try asking your agent:
 - *"Check whether ChatGPT, Perplexity and Google AI Overviews mention Notion for these 10 prompts in the US, and compare with Coda and Obsidian."*
