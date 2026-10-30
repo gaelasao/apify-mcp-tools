@@ -12,7 +12,7 @@ Keyword search volume and the rest of Google's keyword data in bulk, in every co
 
 ![Real output for 8 running shoe keywords in the US: Google, Bing and AI search volume, 12-month trend, CPC, difficulty, intent and SERP features](assets/keyword-research-api-output.png)
 
-Price: **$2 per 1,000 keywords with data**, plus $0.01 per run that returns data. Keywords without data are free. Lower prices on higher Apify plans.
+Price: **$3 per 1,000 keywords with data**, plus $0.01 per run that returns data. Keywords without data are free. Lower prices on higher Apify plans.
 
 - MCP URL: `https://mcp.apify.com/?tools=gaelasao/keyword-research-api`
 - Store page: https://apify.com/gaelasao/keyword-research-api
@@ -53,7 +53,7 @@ Ask the AI engines the questions your customers ask and see whether they mention
 
 ![Real output for Notion against Coda, Obsidian and Evernote: mention, rank, citation, competitors, share of voice and top sources](assets/ai-visibility-tracker-output.png)
 
-Price: **$0.01 per check** (one prompt on one engine; Perplexity counts as 2). Failed checks are free.
+Price: **$0.02 per check** (one prompt on one engine; Perplexity counts as 2). Failed checks are free.
 
 - MCP URL: `https://mcp.apify.com/?tools=gaelasao/ai-visibility-tracker`
 - Store page: https://apify.com/gaelasao/ai-visibility-tracker

@@ -16,6 +16,6 @@ Three workflows that call these Apify Actors from [n8n](https://n8n.io) with the
 
 ## Costs
 
-- Keywords: $2 per 1,000 keywords with data, plus $0.01 per run. 100 keywords a week cost about $0.21. The Apify node stops a run at $1.
+- Keywords: $3 per 1,000 keywords with data, plus $0.01 per run. 100 keywords a week cost about $0.31. The Apify node stops a run at $1.
 - Permits: $5 per 1,000 permits. The Set node asks for 100 permits at most, and the Apify node stops a run at $0.50.
-- AI visibility: $0.01 per check (a Perplexity answer counts as 2), plus $0.01 per run. 10 questions on the 4 engines cost about $0.51 a week. The Apify node stops a run at $1.
+- AI visibility: $0.02 per check (a Perplexity answer counts as 2), plus $0.01 per run. 10 questions on the 4 engines cost about $1.01 a week. The Apify node stops a run at $2.
